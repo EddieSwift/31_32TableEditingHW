@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  EGBViewController.h
 //  31_32TableEditingHW
 //
 //  Created by Eduard Galchenko on 2/2/19.
@@ -8,8 +8,10 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+NS_ASSUME_NONNULL_BEGIN
 
+@interface EGBViewController : UIViewController
 
 @end
 
+NS_ASSUME_NONNULL_END

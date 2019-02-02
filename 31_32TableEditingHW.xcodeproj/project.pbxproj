@@ -8,24 +8,30 @@
 
 /* Begin PBXBuildFile section */
 		2C62BE5922060E5A006A8C19 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C62BE5822060E5A006A8C19 /* AppDelegate.m */; };
-		2C62BE5C22060E5A006A8C19 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C62BE5B22060E5A006A8C19 /* ViewController.m */; };
 		2C62BE5F22060E5A006A8C19 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C62BE5D22060E5A006A8C19 /* Main.storyboard */; };
 		2C62BE6122060E5B006A8C19 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2C62BE6022060E5B006A8C19 /* Assets.xcassets */; };
 		2C62BE6422060E5B006A8C19 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C62BE6222060E5B006A8C19 /* LaunchScreen.storyboard */; };
 		2C62BE6722060E5B006A8C19 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C62BE6622060E5B006A8C19 /* main.m */; };
+		2C62BE6F22060E7B006A8C19 /* EGBViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C62BE6E22060E7B006A8C19 /* EGBViewController.m */; };
+		2C62BE7322060F4C006A8C19 /* EGBStudent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C62BE7222060F4C006A8C19 /* EGBStudent.m */; };
+		2C62BE7622060F62006A8C19 /* EGBGroup.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C62BE7522060F62006A8C19 /* EGBGroup.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		2C62BE5422060E5A006A8C19 /* 31_32TableEditingHW.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = 31_32TableEditingHW.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C62BE5722060E5A006A8C19 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2C62BE5822060E5A006A8C19 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		2C62BE5A22060E5A006A8C19 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		2C62BE5B22060E5A006A8C19 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		2C62BE5E22060E5A006A8C19 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		2C62BE6022060E5B006A8C19 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		2C62BE6322060E5B006A8C19 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		2C62BE6522060E5B006A8C19 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2C62BE6622060E5B006A8C19 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		2C62BE6D22060E7B006A8C19 /* EGBViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EGBViewController.h; sourceTree = "<group>"; };
+		2C62BE6E22060E7B006A8C19 /* EGBViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EGBViewController.m; sourceTree = "<group>"; };
+		2C62BE7122060F4C006A8C19 /* EGBStudent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EGBStudent.h; sourceTree = "<group>"; };
+		2C62BE7222060F4C006A8C19 /* EGBStudent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EGBStudent.m; sourceTree = "<group>"; };
+		2C62BE7422060F62006A8C19 /* EGBGroup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EGBGroup.h; sourceTree = "<group>"; };
+		2C62BE7522060F62006A8C19 /* EGBGroup.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EGBGroup.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,10 +64,11 @@
 		2C62BE5622060E5A006A8C19 /* 31_32TableEditingHW */ = {
 			isa = PBXGroup;
 			children = (
+				2C62BE7022060F32006A8C19 /* Models */,
+				2C62BE6D22060E7B006A8C19 /* EGBViewController.h */,
+				2C62BE6E22060E7B006A8C19 /* EGBViewController.m */,
 				2C62BE5722060E5A006A8C19 /* AppDelegate.h */,
 				2C62BE5822060E5A006A8C19 /* AppDelegate.m */,
-				2C62BE5A22060E5A006A8C19 /* ViewController.h */,
-				2C62BE5B22060E5A006A8C19 /* ViewController.m */,
 				2C62BE5D22060E5A006A8C19 /* Main.storyboard */,
 				2C62BE6022060E5B006A8C19 /* Assets.xcassets */,
 				2C62BE6222060E5B006A8C19 /* LaunchScreen.storyboard */,
@@ -69,6 +76,17 @@
 				2C62BE6622060E5B006A8C19 /* main.m */,
 			);
 			path = 31_32TableEditingHW;
+			sourceTree = "<group>";
+		};
+		2C62BE7022060F32006A8C19 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				2C62BE7422060F62006A8C19 /* EGBGroup.h */,
+				2C62BE7522060F62006A8C19 /* EGBGroup.m */,
+				2C62BE7122060F4C006A8C19 /* EGBStudent.h */,
+				2C62BE7222060F4C006A8C19 /* EGBStudent.m */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -141,7 +159,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2C62BE5C22060E5A006A8C19 /* ViewController.m in Sources */,
+				2C62BE7622060F62006A8C19 /* EGBGroup.m in Sources */,
+				2C62BE7322060F4C006A8C19 /* EGBStudent.m in Sources */,
+				2C62BE6F22060E7B006A8C19 /* EGBViewController.m in Sources */,
 				2C62BE6722060E5B006A8C19 /* main.m in Sources */,
 				2C62BE5922060E5A006A8C19 /* AppDelegate.m in Sources */,
 			);
