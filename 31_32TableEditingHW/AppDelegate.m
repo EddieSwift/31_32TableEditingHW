@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "EGBViewController.h"
 
 @interface AppDelegate ()
 
@@ -17,6 +18,13 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    EGBViewController *controller = [[EGBViewController alloc] init];
+    
+    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:controller];
+    
+    self.window.rootViewController = navController;
+    
     return YES;
 }
 

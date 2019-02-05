@@ -7,12 +7,12 @@
 //
 
 #import "EGBViewController.h"
-#import "EGBGroup.h"
 #import "EGBStudent.h"
+#import "EGBGroup.h"
 
-@interface EGBViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface EGBViewController () <UITableViewDelegate, UITableViewDataSource>
 
-@property (strong, nonatomic) UITableView *tableView;
+@property (weak, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) NSMutableArray *groupsArray;
 
 @end
@@ -36,8 +36,9 @@
     
     self.tableView = tableView;
     
-    self.tableView.editing = YES;
+    self.tableView.editing = NO;
     
+    self.tableView.allowsSelectionDuringEditing = NO;
 }
 
 - (void)viewDidLoad {
@@ -46,14 +47,14 @@
     
     self.groupsArray = [NSMutableArray array];
     
-    for (int i = 0; i < arc4random() % 5 + 6; i++) {
+    for (int i = 0; i < arc4random() % 6 + 5; i++) {
         
         EGBGroup *group = [[EGBGroup alloc] init];
         group.name = [NSString stringWithFormat:@"Group #%d", i];
         
         NSMutableArray *array = [NSMutableArray array];
         
-        for (int j = 0; j < arc4random() % 1 + 15; j++) {
+        for (int j = 0; j < arc4random() % 11 + 15; j++) {
             
             [array addObject:[EGBStudent randomStudent]];
         }
@@ -62,22 +63,92 @@
         
         [self.groupsArray addObject:group];
     }
-
+    
     [self.tableView reloadData];
+    
+    self.navigationItem.title = @"Students";
+    
+    UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemEdit
+                                                                                target:self
+                                                                                action:@selector(actionEdit:)];
+    
+    self.navigationItem.rightBarButtonItem = editButton;
+    
+    UIBarButtonItem *addButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
+                                                                               target:self
+                                                                               action:@selector(actionAddSection:)];
+    
+    self.navigationItem.leftBarButtonItem = addButton;
 }
 
-#pragma markd - UITableViewDataSource
+#pragma mark - Actions
+
+- (void) actionAddSection:(UIBarButtonItem*) sender {
+    
+    EGBGroup *group = [[EGBGroup alloc] init];
+    
+    NSUInteger groupCount = [self.groupsArray count];
+    
+    group.name = [NSString stringWithFormat:@"Group #%ld", groupCount];
+    
+    group.students = @[[EGBStudent randomStudent], [EGBStudent randomStudent]];
+    
+    NSInteger newSectionIndex = 0;
+    
+    [self.groupsArray insertObject:group atIndex:newSectionIndex];
+    
+    [self.tableView beginUpdates];
+    
+    NSIndexSet *insertSection = [NSIndexSet indexSetWithIndex:newSectionIndex];
+    
+    UITableViewRowAnimation animation = UITableViewRowAnimationFade;
+    
+    if ([self.groupsArray count] > 1) {
+        
+        animation = [self.groupsArray count] % 2 ?UITableViewRowAnimationAutomatic : UITableViewRowAnimationRight;
+    }
+    
+    
+    [self.tableView insertSections:insertSection
+                  withRowAnimation: animation];
+    
+    [self.tableView endUpdates];
+    
+    [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        if ([[UIApplication sharedApplication] isIgnoringInteractionEvents]) {
+            
+            [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+        }
+    });
+    
+}
+
+- (void) actionEdit:(UIBarButtonItem*) sender {
+    
+    BOOL isEditing = self.tableView.editing;
+    
+    [self.tableView setEditing:!isEditing animated:YES];
+    
+    UIBarButtonSystemItem item = UIBarButtonSystemItemEdit;
+    
+    if (self.tableView.editing) {
+        
+        item = UIBarButtonSystemItemDone;
+    }
+    
+    UIBarButtonItem *editButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:item target:self action:@selector(actionEdit:)];
+    
+    //    self.navigationItem.rightBarButtonItem = editButton;
+    [self.navigationItem setRightBarButtonItem:editButton animated:YES];
+}
+
+#pragma mark - UITableViewDataSource
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     
     return [self.groupsArray count];
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    
-    EGBGroup *group = [self.groupsArray objectAtIndex:section];
-    
-    return [group.students count];
 }
 
 - (nullable NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
@@ -85,97 +156,199 @@
     return [[self.groupsArray objectAtIndex:section] name];
 }
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+    
+    EGBGroup *group = [self.groupsArray objectAtIndex:section];
+    
+    return [group.students count] + 1;
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    static NSString *identifier = @"Cell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    
-    if (!cell) {
+    if (indexPath.row == 0) {
         
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
-    }
-    
-    EGBGroup *group = [self.groupsArray objectAtIndex:indexPath.section];
-    EGBStudent *student = [group.students objectAtIndex:indexPath.row];
-    
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", student.firstName, student.lastName];
-    cell.detailTextLabel.text = [NSString stringWithFormat:@"%1.2f", student.averageGrade];
-    
-    if (student.averageGrade >= 4.0) {
-        cell.detailTextLabel.textColor = [UIColor greenColor];
-    } else if (student.averageGrade >= 3.0) {
-        cell.detailTextLabel.textColor = [UIColor orangeColor];
+        static NSString *addStudentIdentifier = @"AddStudentCell";
+        
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:addStudentIdentifier];
+        
+        if (!cell) {
+            
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:addStudentIdentifier];
+            cell.textLabel.text = @"Tap to add new student";
+            cell.textLabel.textColor = [UIColor blueColor];
+        }
+        
+        return cell;
+        
     } else {
-        cell.detailTextLabel.textColor = [UIColor redColor];
+        
+        static NSString *identifier = @"Cell";
+        
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+        
+        if (!cell) {
+            
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:identifier];
+        }
+        
+        EGBGroup *group = [self.groupsArray objectAtIndex:indexPath.section];
+        EGBStudent *student = [group.students objectAtIndex:indexPath.row - 1];
+        
+        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", student.firstName, student.lastName];
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"%1.2f", student.averageGrade];
+        
+        if (student.averageGrade >= 4.0) {
+            cell.detailTextLabel.textColor = [UIColor greenColor];
+        } else if (student.averageGrade >= 3.0) {
+            cell.detailTextLabel.textColor = [UIColor orangeColor];
+        } else {
+            cell.detailTextLabel.textColor = [UIColor redColor];
+        }
+        
+        return cell;
     }
-    
-    return cell;
 }
 
-
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    return YES;
+    return indexPath.row > 0;
 }
 
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)sourceIndexPath toIndexPath:(NSIndexPath *)destinationIndexPath {
     
     EGBGroup* sourceGroup = [self.groupsArray objectAtIndex:sourceIndexPath.section];
-    EGBStudent* student = [sourceGroup.students objectAtIndex:sourceIndexPath.row];
+    EGBStudent* student = [sourceGroup.students objectAtIndex:sourceIndexPath.row - 1];
     
     NSMutableArray* tempArray = [NSMutableArray arrayWithArray:sourceGroup.students];
     
-
+    
     if (sourceIndexPath.section == destinationIndexPath.section) {
-
-        [tempArray exchangeObjectAtIndex:sourceIndexPath.row withObjectAtIndex:destinationIndexPath.row];
+        
+        if (sourceIndexPath.row > destinationIndexPath.row) {
+            
+            [tempArray insertObject:student atIndex:destinationIndexPath.row];
+            [tempArray removeObjectAtIndex:sourceIndexPath.row - 1];
+            
+        } else {
+            
+            [tempArray insertObject:student atIndex:destinationIndexPath.row - 1];
+            [tempArray removeObjectAtIndex:sourceIndexPath.row];
+        }
+        
         sourceGroup.students = tempArray;
-
+        
     } else {
-
+        
         [tempArray removeObject:student];
         sourceGroup.students = tempArray;
-
+        
         EGBGroup* destinationGroup = [self.groupsArray objectAtIndex:destinationIndexPath.section];
         tempArray = [NSMutableArray arrayWithArray:destinationGroup.students];
         [tempArray insertObject:student atIndex:destinationIndexPath.row];
         destinationGroup.students = tempArray;
-
+        
     }
+}
 
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        
+        EGBGroup* sourceGroup = [self.groupsArray objectAtIndex:indexPath.section];
+        EGBStudent* student = [sourceGroup.students objectAtIndex:indexPath.row - 1];
+            
+        NSMutableArray* tempArray = [NSMutableArray arrayWithArray:sourceGroup.students];
+        [tempArray removeObject:student];
+        sourceGroup.students = tempArray;
+            
+        [tableView beginUpdates];
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        [tableView endUpdates];
+    }
 }
 
 #pragma mark - UITableViewDelegate
 
-- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+- (NSString *)tableView:(UITableView *)tableView titleForDeleteConfirmationButtonForRowAtIndexPath:(NSIndexPath *)indexPath {
     
-    
-    return arc4random() % 1000 / 500 ? UITableViewCellEditingStyleInsert : UITableViewCellEditingStyleDelete;
+    return @"Remove";
 }
 
-/*
-// Moving/reordering
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    EGBGroup* sourceGroup = [self.groupsArray objectAtIndex:indexPath.section];
+    NSInteger sectionSize = [sourceGroup.students count];
+    
+    UITableViewCellEditingStyle style = UITableViewCellEditingStyleDelete;
+    
+    if (sectionSize == 0) {
+        
+        return style;
+    }
+    
+    
+    return indexPath.row == 0 ? UITableViewCellEditingStyleNone: UITableViewCellEditingStyleDelete;
+}
 
-// Allows the reorder accessory view to optionally be shown for a particular row. By default, the reorder control will be shown only if the datasource implements -tableView:moveRowAtIndexPath:toIndexPath:
- 
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath;
+- (BOOL)tableView:(UITableView *)tableView shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    return NO;
+}
 
-// Index
+// Allows customization of the target row for a particular row as it is being moved/reordered
+- (NSIndexPath *)tableView:(UITableView *)tableView targetIndexPathForMoveFromRowAtIndexPath:(NSIndexPath *)sourceIndexPath toProposedIndexPath:(NSIndexPath *)proposedDestinationIndexPath; {
+    
+    if (proposedDestinationIndexPath.row == 0) {
+        
+        return sourceIndexPath;
+        
+    } else {
+        
+        return proposedDestinationIndexPath;
+    }
+}
 
-- (nullable NSArray<NSString *> *)sectionIndexTitlesForTableView:(UITableView *)tableView;                               // return list of section titles to display in section index view (e.g. "ABCD...Z#")
-- (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index;  // tell table which section corresponds to section title/index (e.g. "B",1))
-
-// Data manipulation - insert and delete support
-
-// After a row has the minus or plus button invoked (based on the UITableViewCellEditingStyle for the cell), the dataSource must commit the change
-// Not called for edit actions using UITableViewRowAction - the action's handler will be invoked instead
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath;
-
-
-*/
-
+// Called after the user changes the selection.
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (indexPath.row == 0) {
+        
+        EGBGroup *group = [self.groupsArray objectAtIndex:indexPath.section];
+        NSMutableArray* tempArray = nil;
+        
+        if (group.students) {
+            
+            tempArray = [NSMutableArray arrayWithArray:group.students];
+            
+        } else {
+            
+            tempArray = [NSMutableArray array];
+        }
+        
+        NSInteger newStudentIndex = 0;
+        [tempArray insertObject:[EGBStudent randomStudent] atIndex:newStudentIndex];
+        group.students = tempArray;
+        [self.tableView beginUpdates];
+        
+        NSIndexPath *newIndexPath = [NSIndexPath indexPathForItem:newStudentIndex + 1 inSection:indexPath.section];
+        
+        [self.tableView insertRowsAtIndexPaths:@[newIndexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+        
+        [self.tableView endUpdates];
+        
+        [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+            
+            if ([[UIApplication sharedApplication] isIgnoringInteractionEvents]) {
+                
+                [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+            }
+        });
+    }
+}
 
 @end
+
+
