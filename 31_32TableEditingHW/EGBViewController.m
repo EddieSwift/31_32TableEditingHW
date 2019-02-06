@@ -250,20 +250,55 @@
     }
 }
 
+//- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
+//
+//    if (editingStyle == UITableViewCellEditingStyleDelete) {
+//
+//        EGBGroup* sourceGroup = [self.groupsArray objectAtIndex:indexPath.section];
+//        EGBStudent* student = [sourceGroup.students objectAtIndex:indexPath.row - 1];
+//
+//        NSMutableArray* tempArray = [NSMutableArray arrayWithArray:sourceGroup.students];
+//        [tempArray removeObject:student];
+//        sourceGroup.students = tempArray;
+//
+//        [tableView beginUpdates];
+//        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+//        [tableView endUpdates];
+//    }
+//}
+
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        
-        EGBGroup* sourceGroup = [self.groupsArray objectAtIndex:indexPath.section];
-        EGBStudent* student = [sourceGroup.students objectAtIndex:indexPath.row - 1];
-            
-        NSMutableArray* tempArray = [NSMutableArray arrayWithArray:sourceGroup.students];
-        [tempArray removeObject:student];
-        sourceGroup.students = tempArray;
-            
-        [tableView beginUpdates];
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
-        [tableView endUpdates];
+
+    EGBGroup *group = [self.groupsArray objectAtIndex:indexPath.section];
+
+    if (group.students.count > 0) {
+
+        NSMutableArray *tempArray = [NSMutableArray arrayWithArray:group.students];
+
+        [tempArray removeObjectAtIndex:indexPath.row - 1];
+
+        group.students = [NSArray arrayWithArray:tempArray];;
+
+        [self.groupsArray replaceObjectAtIndex:indexPath.section withObject:group];
+
+        [self.tableView beginUpdates];
+
+        NSIndexPath* deleteIndexPath = [NSIndexPath indexPathForItem: indexPath.row inSection:indexPath.section];
+
+        [self.tableView deleteRowsAtIndexPaths:@[deleteIndexPath] withRowAnimation:UITableViewRowAnimationRight];
+
+        [self.tableView endUpdates];
+
+    } else {
+
+        [self.groupsArray removeObjectAtIndex:indexPath.section];
+
+        [self.tableView beginUpdates];
+
+        NSIndexSet *set = [NSIndexSet indexSetWithIndex:indexPath.section];
+        [self.tableView deleteSections:set withRowAnimation:UITableViewRowAnimationLeft];
+
+        [self.tableView endUpdates];
     }
 }
 
